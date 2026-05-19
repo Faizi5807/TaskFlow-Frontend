@@ -48,7 +48,7 @@ export default function DashboardPage() {
     } catch (err) {
       showToast(
         err instanceof Error ? err.message : "Failed to load tasks",
-        "error"
+        "error",
       );
     } finally {
       setLoading(false);
@@ -61,8 +61,7 @@ export default function DashboardPage() {
 
   // Filter & search
   const filteredTasks = tasks.filter((task) => {
-    const matchesFilter =
-      filter === "all" || getTaskStatus(task) === filter;
+    const matchesFilter = filter === "all" || getTaskStatus(task) === filter;
     const matchesSearch =
       !search.trim() ||
       task.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -73,8 +72,12 @@ export default function DashboardPage() {
   // Stats
   const totalTasks = tasks.length;
   const todoCount = tasks.filter((t) => getTaskStatus(t) === "todo").length;
-  const progressCount = tasks.filter((t) => getTaskStatus(t) === "in-progress").length;
-  const completedCount = tasks.filter((t) => getTaskStatus(t) === "completed").length;
+  const progressCount = tasks.filter(
+    (t) => getTaskStatus(t) === "in-progress",
+  ).length;
+  const completedCount = tasks.filter(
+    (t) => getTaskStatus(t) === "completed",
+  ).length;
 
   // Create task
   const handleCreateTask = async () => {
@@ -98,7 +101,7 @@ export default function DashboardPage() {
     } catch (err) {
       showToast(
         err instanceof Error ? err.message : "Failed to create task",
-        "error"
+        "error",
       );
     } finally {
       setCreateLoading(false);
@@ -115,7 +118,7 @@ export default function DashboardPage() {
     } catch (err) {
       showToast(
         err instanceof Error ? err.message : "Failed to start task",
-        "error"
+        "error",
       );
     } finally {
       setActionLoading(false);
@@ -132,7 +135,7 @@ export default function DashboardPage() {
     } catch (err) {
       showToast(
         err instanceof Error ? err.message : "Failed to complete task",
-        "error"
+        "error",
       );
     } finally {
       setActionLoading(false);
@@ -150,7 +153,7 @@ export default function DashboardPage() {
     } catch (err) {
       showToast(
         err instanceof Error ? err.message : "Failed to delete task",
-        "error"
+        "error",
       );
     } finally {
       setActionLoading(false);
@@ -183,7 +186,7 @@ export default function DashboardPage() {
     } catch (err) {
       showToast(
         err instanceof Error ? err.message : "Failed to update task",
-        "error"
+        "error",
       );
     } finally {
       setEditLoading(false);
@@ -214,8 +217,19 @@ export default function DashboardPage() {
               size="md"
               onClick={fetchTasks}
               icon={
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" /><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="23 4 23 10 17 10" />
+                  <polyline points="1 20 1 14 7 14" />
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
                 </svg>
               }
             >
@@ -226,8 +240,18 @@ export default function DashboardPage() {
               size="md"
               onClick={() => setShowCreateModal(true)}
               icon={
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
                 </svg>
               }
             >
@@ -240,8 +264,20 @@ export default function DashboardPage() {
         <div className={styles.statsGrid}>
           <div className={styles.statCard}>
             <div className={`${styles.statIcon} ${styles.statIconTotal}`}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
               </svg>
             </div>
             <div className={styles.statInfo}>
@@ -252,8 +288,18 @@ export default function DashboardPage() {
 
           <div className={styles.statCard}>
             <div className={`${styles.statIcon} ${styles.statIconTodo}`}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" /><line x1="8" y1="12" x2="16" y2="12" />
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="8" y1="12" x2="16" y2="12" />
               </svg>
             </div>
             <div className={styles.statInfo}>
@@ -264,8 +310,18 @@ export default function DashboardPage() {
 
           <div className={styles.statCard}>
             <div className={`${styles.statIcon} ${styles.statIconProgress}`}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="23 4 23 10 17 10" />
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
               </svg>
             </div>
             <div className={styles.statInfo}>
@@ -276,8 +332,18 @@ export default function DashboardPage() {
 
           <div className={styles.statCard}>
             <div className={`${styles.statIcon} ${styles.statIconDone}`}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
               </svg>
             </div>
             <div className={styles.statInfo}>
@@ -303,8 +369,18 @@ export default function DashboardPage() {
           </div>
 
           <div className={styles.searchBox}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
             <input
               className={styles.searchInput}
@@ -324,8 +400,19 @@ export default function DashboardPage() {
         ) : filteredTasks.length === 0 ? (
           <div className={styles.emptyState}>
             <div className={styles.emptyIcon}>
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><line x1="9" y1="9" x2="15" y2="15" /><line x1="15" y1="9" x2="9" y2="15" />
+              <svg
+                width="36"
+                height="36"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                <line x1="9" y1="9" x2="15" y2="15" />
+                <line x1="15" y1="9" x2="9" y2="15" />
               </svg>
             </div>
             <h3>{search ? "No matching tasks" : "No tasks yet"}</h3>
@@ -335,7 +422,10 @@ export default function DashboardPage() {
                 : "Create your first task to get started"}
             </p>
             {!search && (
-              <Button variant="primary" onClick={() => setShowCreateModal(true)}>
+              <Button
+                variant="primary"
+                onClick={() => setShowCreateModal(true)}
+              >
                 Create Task
               </Button>
             )}
@@ -365,10 +455,17 @@ export default function DashboardPage() {
         title="Create New Task"
         footer={
           <>
-            <Button variant="secondary" onClick={() => setShowCreateModal(false)}>
+            <Button
+              variant="secondary"
+              onClick={() => setShowCreateModal(false)}
+            >
               Cancel
             </Button>
-            <Button variant="primary" loading={createLoading} onClick={handleCreateTask}>
+            <Button
+              variant="primary"
+              loading={createLoading}
+              onClick={handleCreateTask}
+            >
               Create Task
             </Button>
           </>
@@ -411,7 +508,11 @@ export default function DashboardPage() {
             <Button variant="secondary" onClick={() => setEditTask(null)}>
               Cancel
             </Button>
-            <Button variant="primary" loading={editLoading} onClick={handleUpdateTask}>
+            <Button
+              variant="primary"
+              loading={editLoading}
+              onClick={handleUpdateTask}
+            >
               Save Changes
             </Button>
           </>

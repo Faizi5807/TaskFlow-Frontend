@@ -1,8 +1,10 @@
-export enum UserRole {
-  StandardUser = 1,
-  Moderator = 2,
-  Administrator = 3,
-}
+export const UserRole = {
+  StandardUser: 1,
+  Moderator: 2,
+  Administrator: 3,
+} as const;
+
+export type UserRole = typeof UserRole[keyof typeof UserRole];
 
 export const ROLE_LABELS: Record<number, string> = {
   [UserRole.StandardUser]: "User",
