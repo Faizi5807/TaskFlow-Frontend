@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import InputField from "../../components/inputField";
 import Button from "../../components/button";
 import { useAuth } from "../../store/auth-context";
@@ -33,7 +33,7 @@ export default function LoginPage() {
       const response = await apiClient.post<ILoginResponse>(
         API_URLS.LOGIN,
         { email, password },
-        false
+        false,
       );
 
       // The login endpoint returns { token, email } directly (not wrapped in data)
@@ -44,25 +44,59 @@ export default function LoginPage() {
       const token = tokenData.token;
       const userEmail = tokenData.email;
 
-      // Decode JWT to get user info
+      // Determine the user's role, checking the API response first, then decoding JWT
+      let userRole: number | undefined;
+      const responseRole = (tokenData as any).role;
+      if (responseRole) {
+        if (typeof responseRole === "number") {
+          userRole = responseRole;
+        } else if (typeof responseRole === "string") {
+          const lowerRole = responseRole.toLowerCase();
+          if (lowerRole === "standarduser") userRole = 1;
+          else if (lowerRole === "moderator") userRole = 2;
+          else if (lowerRole === "administrator" || lowerRole === "admin") userRole = 3;
+        }
+      }
+
+      if (!userRole) {
+        const decoded = decodeToken(token);
+        const decodedRole = decoded?.role || decoded?.["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+        if (decodedRole) {
+          if (typeof decodedRole === "number") {
+            userRole = decodedRole;
+          } else if (typeof decodedRole === "string") {
+            const lowerRole = decodedRole.toLowerCase();
+            if (lowerRole === "standarduser" || lowerRole === "1") userRole = 1;
+            else if (lowerRole === "moderator" || lowerRole === "2") userRole = 2;
+            else if (lowerRole === "administrator" || lowerRole === "admin" || lowerRole === "3") userRole = 3;
+          }
+        }
+      }
+
+      // Decode name and ID from token
       const decoded = decodeToken(token);
       const userName =
-        (decoded?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] as string) ||
+        (decoded?.[
+          "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+        ] as string) ||
         (decoded?.name as string) ||
         userEmail;
-      const userRole = decoded?.role
-        ? Number(decoded.role)
-        : (decoded?.["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] as number | undefined);
       const userId = decoded?.sub
         ? Number(decoded.sub)
-        : (decoded?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"]
-            ? Number(decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"])
-            : undefined);
+        : decoded?.[
+              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+            ]
+          ? Number(
+              decoded[
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+              ],
+            )
+          : undefined;
 
       login(token, {
         email: userEmail,
         name: userName,
-        role: userRole ? Number(userRole) : undefined,
+        role: userRole,
         id: userId,
       });
 
@@ -70,7 +104,9 @@ export default function LoginPage() {
       navigate("/dashboard");
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : "Invalid credentials. Please try again.";
+        err instanceof Error
+          ? err.message
+          : "Invalid credentials. Please try again.";
       setError(message);
       showToast(message, "error");
     } finally {
@@ -83,18 +119,40 @@ export default function LoginPage() {
       <div className={styles.authCard}>
         <div className={styles.logoSection}>
           <div className={styles.logoBox}>
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="26"
+              height="26"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
             </svg>
           </div>
           <h1 className={styles.authTitle}>Welcome Back</h1>
-          <p className={styles.authSubtitle}>Sign in to your TaskFlow account</p>
+          <p className={styles.authSubtitle}>
+            Sign in to your TaskFlow account
+          </p>
         </div>
 
         {error && (
           <div className={styles.errorBanner}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" />
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <line x1="15" y1="9" x2="9" y2="15" />
+              <line x1="9" y1="9" x2="15" y2="15" />
             </svg>
             {error}
           </div>
@@ -109,8 +167,18 @@ export default function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             autoComplete="email"
             icon={
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" />
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
               </svg>
             }
           />
@@ -122,8 +190,18 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
             icon={
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
               </svg>
             }
           />
@@ -131,10 +209,6 @@ export default function LoginPage() {
             Sign In
           </Button>
         </form>
-
-        <p className={styles.footer}>
-          Don't have an account? <Link to="/register">Create one</Link>
-        </p>
       </div>
     </div>
   );

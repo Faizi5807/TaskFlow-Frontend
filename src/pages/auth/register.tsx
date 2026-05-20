@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../store/auth-context";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import InputField from "../../components/inputField";
 import Button from "../../components/button";
 import { useToast } from "../../components/toast";
@@ -18,6 +19,12 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const { isLoggedIn, user } = useAuth();
+
+  // If logged in but NOT an Administrator, redirect to dashboard
+  if (isLoggedIn && user?.role !== UserRole.Administrator) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -38,11 +45,15 @@ export default function RegisterPage() {
       await apiClient.post<IRegisterResponse>(
         API_URLS.REGISTER,
         { email, name, password, role },
-        false,
+        isLoggedIn,
       );
-
-      showToast("Account created successfully! Please sign in.", "success");
-      navigate("/login");
+      if (isLoggedIn) {
+        showToast(`User ${name} created successfully! 🎉`, "success");
+        navigate("/dashboard");
+      } else {
+        showToast("Account created successfully! Please sign in.", "success");
+        navigate("/login");
+      }
     } catch (err: unknown) {
       const message =
         err instanceof Error
@@ -73,8 +84,14 @@ export default function RegisterPage() {
               <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
             </svg>
           </div>
-          <h1 className={styles.authTitle}>Create Account</h1>
-          <p className={styles.authSubtitle}>Get started with TaskFlow today</p>
+          <h1 className={styles.authTitle}>
+            {isLoggedIn ? "Create New User" : "Create Account"}
+          </h1>
+          <p className={styles.authSubtitle}>
+            {isLoggedIn
+              ? "Add a new team member to TaskFlow"
+              : "Get started with TaskFlow today"}
+          </p>
         </div>
 
         {error && (
@@ -147,7 +164,9 @@ export default function RegisterPage() {
           <InputField
             label="Password"
             type="password"
-            placeholder="Create a password"
+            placeholder={
+              isLoggedIn ? "Assign a temporary password" : "Create a password"
+            }
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="new-password"
@@ -193,12 +212,18 @@ export default function RegisterPage() {
           </div>
 
           <Button type="submit" fullWidth size="lg" loading={loading}>
-            Create Account
+            {isLoggedIn ? "Create User" : "Create Account"}
           </Button>
         </form>
 
         <p className={styles.footer}>
-          Already have an account? <Link to="/login">Sign in</Link>
+          {isLoggedIn ? (
+            <Link to="/dashboard">Back to Dashboard</Link>
+          ) : (
+            <>
+              Already have an account? <Link to="/login">Sign in</Link>
+            </>
+          )}
         </p>
       </div>
     </div>
