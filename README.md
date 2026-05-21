@@ -38,3 +38,5 @@ https://task-flow-blue-mu.vercel.app/
 The Application restricts to only administrators adding new users. These are a already created Standard User Credentials
 email: mesimom@gmail.com
 password:123456
+# Reservation
+As the backend has been deployed on render. You might have to wait a little bit for the request to fulfill as render server sleeps after a specific time of inactivity.
